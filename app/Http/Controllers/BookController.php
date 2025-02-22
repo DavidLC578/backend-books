@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\BookCollection;
 use App\Models\Book;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class BookController extends Controller
 {
+    // Get the information of a book
     public function getBook($id)
     {
         $book = Book::findOrFail($id);
@@ -15,6 +17,13 @@ class BookController extends Controller
             'book' => $book
         ], 201);
     }
+
+    public function getallbooks()
+    {
+        $books = book::paginate(5);
+        return new BookCollection($books);
+    }
+
     public function store(Request $request)
     {
         $book = new Book();
