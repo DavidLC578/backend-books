@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('synopsis');
             $table->string('category');
             $table->string('file')->nullable();
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }

@@ -30,12 +30,15 @@ class BookController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'file' => 'required|file|mimes:pdf|max:2048', // Máx 2MB
+            'image' => 'required|file|mimes:jpg,png,jpeg|max:2048', // Máx 2MB
         ]);
         $filePath = $request->file('file')->store('books', 'public');
+        $imgPath = $request->file('image')->store('images', 'public');
         $book->title = $request->title;
         $book->synopsis = $request->synopsis;
         $book->category = $request->category;
         $book->file = $filePath;
+        $book->image = $imgPath;
 
         $book->save();
         return response()->json([
@@ -49,26 +52,32 @@ class BookController extends Controller
         $book = Book::findOrFail($id);
         $request->validate([
             'title' => 'required|string|max:255',
-            'file' => 'nullable|file|mimes:pdf|max:2048' // Optional: if a new PDF is uploaded
+            'file' => 'nullable|file|mimes:pdf|max:2048',
+            'image' => 'nullable|file|mimes:jpg,png,jpeg|max:2048',
         ]);
 
-        // Update the title
         $book->title = $request->title;
         $book->synopsis = $request->synopsis;
         $book->category = $request->category;
 
-        // If a new file is uploaded, delete the old one and save the new one
+        // Update the book file if new file 
         if ($request->hasFile('file')) {
-            // Delete the old file if it exists
             if ($book->file && Storage::disk('public')->exists($book->file)) {
                 Storage::disk('public')->delete($book->file);
             }
-
-            // Save the new file
             $filePath = $request->file('file')->store('books', 'public');
             $book->file = $filePath;
         }
-        // Save changes
+
+        // Update the book image if new file 
+        if ($request->hasFile('image')) {
+            if ($book->image && Storage::disk('public')->exists($book->image)) {
+                Storage::disk('public')->delete($book->image);
+            }
+            $imgPath = $request->file('image')->store('images', 'public');
+            $book->image = $imgPath;
+        }
+
         $book->save();
 
         return response()->json([
@@ -76,6 +85,7 @@ class BookController extends Controller
             'book' => $book
         ], 200);
     }
+
 
 
     public function download($id)
