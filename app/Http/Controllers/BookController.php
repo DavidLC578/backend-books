@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\BookCollection;
 use App\Models\Book;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -21,7 +22,11 @@ class BookController extends Controller
     public function getallbooks()
     {
         $books = book::paginate(5);
-        return new BookCollection($books);
+        // return new BookCollection($books);
+        foreach ($books as $book) {
+            $book->image_url = asset('storage/' . $book->image);
+        }
+        return response()->json(['data' => $books], 200);
     }
 
     public function store(Request $request)
@@ -39,6 +44,7 @@ class BookController extends Controller
         $book->category = $request->category;
         $book->file = $filePath;
         $book->image = $imgPath;
+        $book->user_id = Auth::user()->id;
 
         $book->save();
         return response()->json([
