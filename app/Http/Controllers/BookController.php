@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\BookCollection;
 use App\Models\Book;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -19,13 +20,16 @@ class BookController extends Controller
         ], 201);
     }
 
-    public function getallbooks()
+    public function getAllBooks()
     {
-        $books = book::paginate(5);
-        // return new BookCollection($books);
-        foreach ($books as $book) {
+        $books = Book::with('user')->get(); // Cargar relación con usuario en una sola consulta
+
+        // Modificar la colección para agregar la URL de la imagen
+        $books->transform(function ($book) {
             $book->image_url = asset('storage/' . $book->image);
-        }
+            return $book;
+        });
+
         return response()->json(['data' => $books], 200);
     }
 
