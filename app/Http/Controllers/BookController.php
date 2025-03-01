@@ -15,6 +15,9 @@ class BookController extends Controller
     public function getBook($id)
     {
         $book = Book::findOrFail($id);
+
+        $book->image_url = asset('storage/' . $book->image);
+
         return response()->json([
             'book' => $book
         ], 201);
