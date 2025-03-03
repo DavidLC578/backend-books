@@ -63,6 +63,13 @@ class BookController extends Controller
     public function update(Request $request, $id)
     {
         $book = Book::findOrFail($id);
+
+        if ($book->user_id !== Auth::user()->id) {
+            return response()->json([
+                'message' => 'You do not have permission to perform this action.'
+            ], 403);
+        }
+
         $request->validate([
             'title' => 'required|string|max:255',
             'file' => 'nullable|file|mimes:pdf|max:2048',
