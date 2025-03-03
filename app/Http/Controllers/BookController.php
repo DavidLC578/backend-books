@@ -111,6 +111,11 @@ class BookController extends Controller
     public function destroy($id)
     {
         $book = Book::findOrFail($id);
+        if ($book->user_id !== Auth::user()->id) {
+            return response()->json([
+                'message' => 'You do not have permission to perform this action.'
+            ], 403);
+        }
 
         if ($book->file && Storage::disk('public')->exists($book->file)) {
             Storage::disk('public')->delete($book->file);
