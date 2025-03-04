@@ -15,7 +15,7 @@ Backend Books is a RESTful API built with Laravel for managing books, authors, a
 - PHP >= 8.0
 - Composer
 - MySQL or PostgreSQL
-- Laravel 10
+- Laravel 11
 
 ### Setup
 1. Clone the repository:
